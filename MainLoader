@@ -1,6 +1,9 @@
 local SupportedGames = {
-    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- Adopt Me
-    [7326934954] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua" -- 99 Nights
+    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- PlaceId
+    ["920587237-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- GameId (same here for safety)
+
+    -- 99 Nights (uses GameId)
+    ["7326934954-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
 }
 
 if not game:IsLoaded() then
@@ -8,11 +11,12 @@ if not game:IsLoaded() then
 end
 
 local placeId = game.PlaceId
-local scriptURL = SupportedGames[placeId]
+local gameId = game.GameId
+local scriptURL = SupportedGames[placeId] or SupportedGames[tostring(gameId) .. "-GAME"]
 
-if scriptURL then   
-    local gameName = game:GetService("MarketplaceService"):GetProductInfo(placeId).Name
-    print("✅ Loading script for:", gameName)
+if scriptURL then
+    local info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
+    print(" Loading script for: " .. info.Name)
     loadstring(game:HttpGet(scriptURL))()
 else
     task.wait(1)

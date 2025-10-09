@@ -1,14 +1,20 @@
-local games = {
-    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    [7326934954] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua" 
+local SupportedGames = {
+    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- Adopt Me
+    [7326934954] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua" -- 99 Nights
 }
 
-local gameId = game.PlaceId
-local scriptURL = games[gameId]
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
 
-if scriptURL then
-    print("Loading script for: " .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
+local placeId = game.PlaceId
+local scriptURL = SupportedGames[placeId]
+
+if scriptURL then   
+    local gameName = game:GetService("MarketplaceService"):GetProductInfo(placeId).Name
+    print("✅ Loading script for:", gameName)
     loadstring(game:HttpGet(scriptURL))()
 else
+    task.wait(1)
     game.Players.LocalPlayer:Kick("Unsupported game.")
 end

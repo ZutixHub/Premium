@@ -1,8 +1,6 @@
 local SupportedGames = {
-    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- PlaceId
-    ["920587237-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua", -- GameId (same here for safety)
-
-    -- 99 Nights (uses GameId)
+    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
+    ["920587237-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
     ["7326934954-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
 }
 
@@ -14,11 +12,50 @@ local placeId = game.PlaceId
 local gameId = game.GameId
 local scriptURL = SupportedGames[placeId] or SupportedGames[tostring(gameId) .. "-GAME"]
 
+local function safeHttpGet(url)
+    local success, result = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if not success or not result or #result < 10 then
+        warn("[Loader] Failed to fetch script from: " .. url)
+        return nil
+    end
+    return result
+end
+
+local function kickWithReason(reason)
+    local Players = game:GetService("Players")
+    if Players.LocalPlayer then
+        Players.LocalPlayer:Kick(reason)
+    else
+        error(reason)
+    end
+end
+
 if scriptURL then
-    local info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
-    print(" Loading script for: " .. info.Name)
-    loadstring(game:HttpGet(scriptURL))()
+    local info
+    pcall(function()
+        info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
+    end)
+
+    if info and info.Name then
+        print("[Loader] Loading script for:", info.Name)
+    else
+        print("[Loader] Loading script for unknown game ID:", placeId)
+    end
+
+    local scriptData = safeHttpGet(scriptURL)
+    if scriptData then
+        local success, err = pcall(function()
+            loadstring(scriptData)()
+        end)
+
+        if not success then
+            kickWithReason("Error loading script:\n" .. tostring(err))
+        end
+    else
+        kickWithReason("Failed to load script. (HTTP Error)")
+    end
 else
-    task.wait(1)
-    game.Players.LocalPlayer:Kick("Unsupported game.")
+    kickWithReason("Unsupported game. (No matching script found)")
 end

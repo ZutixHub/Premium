@@ -1,53 +1,47 @@
+repeat task.wait() until game:IsLoaded()
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+
+local function safeHttpGet(url)
+    local ok, result = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if ok then return result end
+end
+
+local function getUniverseId(placeId)
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet("https://apis.roblox.com/universes/v1/places/"..placeId.."/universe")).universeId
+    end)
+    if ok and data then
+        return tonumber(data)
+    end
+end
+
 local SupportedGames = {
     [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    [132388544979740] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
     ["920587237-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
     ["383310974-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
     ["7326934954-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
 }
 
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
 local placeId = game.PlaceId
 local gameId = game.GameId
-local scriptURL = SupportedGames[placeId] or SupportedGames[tostring(gameId) .. "-GAME"]
+local universeId = getUniverseId(placeId)
+local scriptURL = SupportedGames[placeId] or SupportedGames[tostring(gameId).."-GAME"]
 
-local function safeHttpGet(url)
-    local success, result = pcall(function()
-        return game:HttpGet(url)
-    end)
-    if success then
-        return result
-    else
-        warn(" Failed to fetch script:", result)
-        return nil
-    end
+if not scriptURL and universeId == 920587237 then
+    scriptURL = SupportedGames[920587237]
 end
 
 if scriptURL then
-    local info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
-    print(" Loading script for:", info.Name)
     local source = safeHttpGet(scriptURL)
     if source then
         loadstring(source)()
     else
-        warn(" Script download failed. Check your connection or GitHub file.")
+        Players.LocalPlayer:Kick("Failed to load script.")
     end
 else
-    warn("Unsupported game.")
-    local info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
-    if info and info.Name:find("Adopt Me") then
-        local backup = SupportedGames[920587237]
-        if backup then
-            print(" Loading fallback Adopt Me script...")
-            local source = safeHttpGet(backup)
-            if source then loadstring(source)() end
-        else
-            warn(" No fallback script available.")
-        end
-    else
-        game.Players.LocalPlayer:Kick("Unsupported game.")
-    end
+    Players.LocalPlayer:Kick("Unsupported Game")
 end

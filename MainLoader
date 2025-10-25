@@ -2,46 +2,36 @@ repeat task.wait() until game:IsLoaded()
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
 local function safeHttpGet(url)
     local ok, result = pcall(function()
         return game:HttpGet(url)
     end)
-    if ok then return result end
-end
-
-local function getUniverseId(placeId)
-    local ok, data = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet("https://apis.roblox.com/universes/v1/places/"..placeId.."/universe")).universeId
-    end)
-    if ok and data then
-        return tonumber(data)
+    if not ok then
+        warn("Failed to fetch:", url, "| Error:", result)
+        return nil
     end
+    return result
 end
 
 local SupportedGames = {
     [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    ["920587237-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    ["383310974-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    ["7326934954-GAME"] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
+    [383310974] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
+    [7326934954] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
 }
 
 local placeId = game.PlaceId
 local gameId = game.GameId
-local universeId = getUniverseId(placeId)
-local scriptURL = SupportedGames[placeId] or SupportedGames[tostring(gameId).."-GAME"]
-
-if not scriptURL and universeId == 920587237 then
-    scriptURL = SupportedGames[920587237]
-end
+local scriptURL = SupportedGames[placeId] or SupportedGames[gameId]
 
 if scriptURL then
     local source = safeHttpGet(scriptURL)
     if source then
         loadstring(source)()
     else
-        Players.LocalPlayer:Kick("Failed to load script.")
+        player:Kick("Failed to load script (network error).")
     end
 else
-    Players.LocalPlayer:Kick("Unsupported Game")
+    player:Kick("Unsupported Game.")
 end

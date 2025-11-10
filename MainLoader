@@ -1,12 +1,13 @@
-task.wait() 
-repeat task.wait() until game:IsLoaded()
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
 
-local player = game:GetService("Players").LocalPlayer
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
 local SupportedGames = {
-    [920587237] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    [383310974] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    [7326934954] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/DiamondFarm.lua"
+    [920587237] = "https://api.junkie-development.de/api/v1/luascripts/public/29b5b9e1c80fb885cee1a5d2f54d6cfa3ca1c30c278ebe87e0a06abd4abce6b4/download",
+    [383310974] = "https://api.junkie-development.de/api/v1/luascripts/public/29b5b9e1c80fb885cee1a5d2f54d6cfa3ca1c30c278ebe87e0a06abd4abce6b4/download",
 }
 
 local scriptURL = SupportedGames[game.PlaceId] or SupportedGames[game.GameId]
@@ -15,13 +16,22 @@ if not scriptURL then
     return
 end
 
-local source = game:HttpGet(scriptURL)
-if not source or source == "" then
-    player:Kick("Script updating")
+local ok, source = pcall(function()
+    return game:HttpGet(scriptURL)
+end)
+
+if not ok then
+    player:Kick("Failed to fetch script:\n" .. tostring(source))
+    return
+elseif not source or source == "" then
+    player:Kick("Empty script content (possible update in progress).")
     return
 end
 
-local success, err = pcall(loadstring(source))
+local success, err = pcall(function()
+    loadstring(source)()
+end)
+
 if not success then
-    player:Kick("Script updating")
+    player:Kick("Script Error:\n" .. tostring(err))
 end

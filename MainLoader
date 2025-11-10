@@ -17,11 +17,11 @@ end
 
 local source = game:HttpGet(scriptURL)
 if not source or source == "" then
-    player:Kick("Failed to load script (Network Error).")
+    player:Kick("Script updating")
     return
 end
 
 local success, err = pcall(loadstring(source))
 if not success then
-    player:Kick("ZutixHub Loader Error:\n" .. tostring(err))
+    player:Kick("Script updating")
 end

@@ -1,5 +1,5 @@
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-for _, player in pairs(Players:GetPlayers()) do
+if player then
     player:Kick("This script is discontinued for now. Please wait for updates.")
-end

@@ -141,11 +141,6 @@ task.spawn(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/thaithinhapi/README/refs/heads/master/walkonwater.lua"))()
     end)
 
-    -- Load Auto Click
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/thaithinhapi/README/refs/heads/master/autoclick.lua"))()
-    end)
-
     -- Continuous Space press
     task.spawn(function()
         while task.wait() do

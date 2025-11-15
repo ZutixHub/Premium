@@ -111,19 +111,9 @@ if featureStates.DisableCameraShake == nil then
 end
 Window:SetIconSize(48)
 Window:Tag({
-    Title = "v1.3.2",
-    Color = Color3.fromHex("#30ff6a")
-})
-
-
---[[
-
--- Disabled fucking beta skid
-Window:Tag({
 Title = "Beta",
 Color = Color3.fromHex("#315dff")
-
-]]
+})
 
 Window:CreateTopbarButton("theme-switcher", "moon", function()
     WindUI:SetTheme(WindUI:GetCurrentTheme() == "Dark" and "Light" or "Dark")

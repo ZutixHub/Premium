@@ -8,10 +8,7 @@ local player = Players.LocalPlayer
 local SupportedGames = {
     [920587237]  = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
     [383310974]  = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/HouseCloner.lua",
-    [3647333358] = "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/Evade.lua",
 }
-
-local EVADE_ID = 3647333358
 
 local function SafeLoad(url, name)
     local data
@@ -29,13 +26,6 @@ local function SafeLoad(url, name)
         player:Kick(name .. " Error:\n" .. tostring(runErr))
         return
     end
-end
-
-if game.PlaceId == EVADE_ID or game.GameId == EVADE_ID then
-    SafeLoad(
-        "https://raw.githubusercontent.com/ZutixHub/Premium/refs/heads/main/SystemCounter.lua",
-        "SystemCounter"
-    )
 end
 
 local scriptURL = SupportedGames[game.PlaceId] or SupportedGames[game.GameId]

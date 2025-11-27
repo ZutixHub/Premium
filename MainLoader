@@ -35,4 +35,4 @@ if not scriptURL then
 end
 
 -- Load main script
-SafeLoad(scriptURL, "ZutixHub Script")
+SafeLoad(scriptURL, "ValorHub Script")

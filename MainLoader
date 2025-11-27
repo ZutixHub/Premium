@@ -30,7 +30,7 @@ end
 
 local scriptURL = SupportedGames[game.PlaceId] or SupportedGames[game.GameId]
 if not scriptURL then
-    player:Kick("This game is not supported by ZutixHub")
+    player:Kick("This game is not supported by ValorHub")
     return
 end
 

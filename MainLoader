@@ -1,3 +1,9 @@
+if getgenv().MainLoaderExecuted then
+    print("[ValorHub] Already executed")
+    return
+end
+getgenv().MainLoaderExecuted = true
+
 task.wait()
 repeat task.wait() until game:IsLoaded()
 
@@ -17,22 +23,21 @@ local function SafeLoad(url, name)
     end)
 
     if not ok or not data or data == "" then
-        player:Kick(name .. " failed to load.\nNetwork Error or Invalid Script.")
+        print("[ERROR] " .. name .. " failed to load. Network Error or Invalid Script.")
         return
     end
 
     local runOK, runErr = pcall(loadstring(data))
     if not runOK then
-        player:Kick(name .. " Error:\n" .. tostring(runErr))
+        print("[ERROR] " .. name .. " Error: " .. tostring(runErr))
         return
     end
 end
 
 local scriptURL = SupportedGames[game.PlaceId] or SupportedGames[game.GameId]
 if not scriptURL then
-    player:Kick("This game is not supported by ValorHub")
+    print("[ERROR] This game is not supported by ValorHub")
     return
 end
 
--- Load main script
 SafeLoad(scriptURL, "ValorHub Script")
